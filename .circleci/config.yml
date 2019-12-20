@@ -27,7 +27,9 @@ jobs:
                cd ~
                mv ~/project/trueface-docker/Dockerfile.mxnetcuda10.0 ~
                docker build -t trueface/mxnet-cuda10.0 -f Dockerfile.mxnetcuda10.0 .
-               docker cp trueface/mxnet-cuda10.0:/mxnet-cuda10.0-archive.tgz ~/mxnet-cuda10.0-archive.tgz
+               docker run --name mxcuda10.0-tmp trueface/mxnet-cuda10.0 /bin/true
+               docker cp mxcuda10.0-tmp:/mxnet-cuda10.0-archive.tgz ~/mxnet-cuda10.0-archive.tgz
+               docker rm mxcuda10.0-tmp
 
       - store_artifacts:
           path: ~/mxnet-cuda10.0-archive.tgz
