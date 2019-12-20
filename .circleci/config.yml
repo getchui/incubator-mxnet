@@ -7,7 +7,7 @@ jobs:
     steps:
       - restore_cache:
           keys:
-            - source-v2-{{ .Branch }}
+            - source-v1-{{ .Branch }}
 
       - checkout
 
@@ -17,7 +17,7 @@ jobs:
             git submodule update --init --recursive
 
       - save_cache:
-          key: source-v2-{{ .Branch }}
+          key: source-v1-{{ .Branch }}
           paths:
             - ".git"
 
