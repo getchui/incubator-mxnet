@@ -1,0 +1,26 @@
+FROM nvidia/cuda:10.0-cudnn7-devel-ubuntu18.04
+
+WORKDIR /build
+
+COPY project /build/project
+
+# Install dependencies
+RUN apt-get update && apt-get upgrade -y && apt-get install -y \
+	libopenblas-dev git cmake python
+
+# Build Mxnet
+RUN export CUDA_HOME=/usr/local/cuda && \
+	export LD_LIBRARY_PATH=${CUDA_HOME}/lib64:${LD_LIBRARY_PATH} &&\
+	export LD_LIBRARY_PATH=${CUDA_HOME}/compat:${LD_LIBRARY_PATH} && \
+	cd project && mkdir build && cd build && \
+	cmake -DUSE_CUDNN=1 -DCUDA_TOOLKIT_ROOT_DIR=/usr/local/cuda -DCMAKE_BUILD_TYPE=Release \
+	-DBLAS=open -DUSE_OPENCV=OFF -DUSE_CPP_PACKAGE=ON -DENABLE_CUDA_RTC=ON .. && \
+	make -j$(nproc)
+
+# Pack the libs & include files we want in the archive, then compress the archive
+RUN mkdir /mxnet-cuda10.0-archive && cd /mxnet-cuda10.0-archive && mkdir lib && \
+	cp /build/project/build/libmxnet.so ./lib && \
+	cp -rL /build/project/include ./include && \
+	cp -r /build/project/cpp-package/include/mxnet-cpp ./include && \
+	cd / && tar czvfh mxnet-cuda10.0-archive.tgz ./mxnet-cuda10.0-archive
+

@@ -1,0 +1,36 @@
+version: 2
+jobs:
+  build:
+    machine:
+      image: ubuntu-1604:201903-01
+
+    steps:
+      - restore_cache:
+          keys:
+            - source-v2-{{ .Branch }}
+
+      - checkout
+
+      - run:
+          name: "Pull Submodules"
+          command: |
+            git submodule update --init --recursive
+
+      - save_cache:
+          key: source-v2-{{ .Branch }}
+          paths:
+            - ".git"
+
+      - run:
+          name: Build Mxnet Cuda 10.0 Docker Image
+          command: |
+               cd ~
+               mv ~/project/trueface-docker/Dockerfile.mxnetcuda10.0 ~
+               docker build -t trueface/mxnet-cuda10.0 -f Dockerfile.mxnetcuda10.0 .
+               docker cp trueface/mxnet-cuda10.0:/mxnet-cuda10.0-archive.tgz ~/mxnet-cuda10.0-archive.tgz
+
+      - store_artifacts:
+          path: ~/mxnet-cuda10.0-archive.tgz
+
+
+
