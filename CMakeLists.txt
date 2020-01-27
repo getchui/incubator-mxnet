@@ -1,5 +1,9 @@
 cmake_minimum_required(VERSION 3.0.2)
 
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -mcmodel=large")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -mcmodel=large")
+set(CMAKE_LINKER_FLAGS "${CMAKE_LINKER_FLAGS} -mcmodel=large")
+
 # workaround to store CMAKE_CROSSCOMPILING because is getting reset by the project command
 if(CMAKE_CROSSCOMPILING)
   set(__CMAKE_CROSSCOMPILING ${CMAKE_CROSSCOMPILING})
